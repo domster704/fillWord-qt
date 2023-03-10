@@ -1,5 +1,5 @@
 #include <iostream>
-#include "rational.hpp"
+#include <rational/rational.hpp>
 
 Rational::Rational(int64_t num, int64_t denom) : num(num), denom(denom) {
     if (denom == 0) {
