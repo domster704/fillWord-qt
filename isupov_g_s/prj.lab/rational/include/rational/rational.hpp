@@ -1,6 +1,9 @@
+#ifndef OOPSEM2_ISUPOV_G_S_PRJLAB_RATIONAL_INCLUDE_RATIONAL_RATIONAL_HPP
+#define OOPSEM2_ISUPOV_G_S_PRJLAB_RATIONAL_INCLUDE_RATIONAL_RATIONAL_HPP
+
 #include <iosfwd>
-#include "stdexcept"
-#include "numeric"
+#include <stdexcept>
+#include <numeric>
 
 class Rational {
 public:
@@ -70,3 +73,5 @@ Rational operator/(const Rational& l, const Rational& r);
 std::ostream& operator<<(std::ostream& ostream, const Rational& r);
 
 std::istream& operator>>(std::istream& istream, Rational& r);
+
+#endif
