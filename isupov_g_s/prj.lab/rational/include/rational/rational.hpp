@@ -13,6 +13,8 @@ public:
 
     Rational(int64_t num, int64_t denom);
 
+    explicit Rational(int64_t num);
+
     ~Rational() = default;
 
     Rational& operator=(const Rational& r) = default;
@@ -49,13 +51,13 @@ public:
 
     inline std::ostream& WriteTo(std::ostream& ostream) const;
 
-    int64_t GetNum() const;
+    int64_t num() const;
 
-    int64_t GetDenum() const;
+    int64_t denom() const;
 
 private:
-    int64_t num = 1;
-    int64_t denom = 1;
+    int64_t num_ = 1;
+    int64_t denom_ = 1;
 
     void simplify();
 };
