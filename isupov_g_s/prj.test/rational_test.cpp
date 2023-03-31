@@ -31,7 +31,6 @@ TEST_CASE("testing the Rational arithmetic") {
         Rational a = {5, -7};
         Rational b = {2, 3};
         b /= a;
-        std::cout << b;
     }
 }
 
