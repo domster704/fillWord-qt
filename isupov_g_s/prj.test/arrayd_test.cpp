@@ -1,132 +1,131 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "arrayd/arrayd.hpp"
-#include "doctest/doctest.h"
+#include <doctest/doctest.h>
+#include <arrayd/arrayd.hpp>
 
-
-TEST_CASE("DefaultConstructor") {
-    ArrayD arr;
-    CHECK(arr.ssize() == 0);
-    CHECK(arr.capacity() == 0);
-}
-
-TEST_CASE("ConstructorWithParameter") {
-    ArrayD arr(5);
-    CHECK(arr.ssize() == 5);
-    CHECK(arr.capacity() == 5);
-}
-
-TEST_CASE("CopyConstructor") {
-    ArrayD arr1(5);
-    arr1[0] = 1.0;
-    ArrayD arr2(arr1);
-    CHECK(arr1.ssize() == arr2.ssize());
-    CHECK(arr1.capacity() == arr2.capacity());
-    CHECK(arr1[0] == arr2[0]);
-}
-
-TEST_CASE("SubscriptOperator") {
-    ArrayD arr(5);
-    arr[0] = 1.0;
-    CHECK(arr[0] == 1.0);
-    CHECK_THROWS_AS(arr[5], std::out_of_range);
-}
-
-TEST_CASE("InsertMethod") {
-    ArrayD arr(5);
-    arr.insert(1.0, 0);
-    CHECK(arr[0] == 1.0);
-    CHECK_THROWS_AS(arr.insert(1.0, 6), std::invalid_argument);
-}
-
-TEST_CASE("remove") {
-    SUBCASE("remove from middle") {
-        ArrayD arr(4);
-        arr[0] = 1.0;
-        arr[1] = 2.0;
-        arr[2] = 3.0;
-        arr[3] = 4.0;
-
-        arr.remove(2);
-        REQUIRE(arr[0] == 1.0);
-        REQUIRE(arr[1] == 2.0);
-        REQUIRE(arr[2] == 4.0);
-        REQUIRE(arr.ssize() == 3);
+TEST_CASE("[arrayD] - ArrayD ctor") {
+    CHECK(ArrayD() == ArrayD(0));
+    CHECK_THROWS(ArrayD(-1));
+    SUBCASE("Constructor with size") {
+        ArrayD test{0, 0};
+        CHECK(test == ArrayD(2));
     }
+    CHECK(ArrayD(ArrayD(2)) == ArrayD(2));
+}
 
-    SUBCASE("remove from front") {
-        ArrayD arr(4);
-        arr[0] = 1.0;
-        arr[1] = 2.0;
-        arr[2] = 3.0;
-        arr[3] = 4.0;
-
-        arr.remove(0);
-        REQUIRE(arr[0] == 2.0);
-        REQUIRE(arr[1] == 3.0);
-        REQUIRE(arr[2] == 4.0);
-        REQUIRE(arr.ssize() == 3);
+TEST_CASE("[arrayD] - ArrayD operator=") {
+    SUBCASE("Simple") {
+        ArrayD test;
+        ArrayD test2(2);
+        test = test2;
+        CHECK(test.ssize() == 2);
     }
-
-    SUBCASE("remove from back") {
-        ArrayD arr(4);
-        arr[0] = 1.0;
-        arr[1] = 2.0;
-        arr[2] = 3.0;
-        arr[3] = 4.0;
-
-        arr.remove(3);
-        REQUIRE(arr[0] == 1.0);
-        REQUIRE(arr[1] == 2.0);
-        REQUIRE(arr[2] == 3.0);
-        REQUIRE(arr.ssize() == 3);
+    SUBCASE("With data") {
+        ArrayD test;
+        ArrayD test2(2);
+        test2[0] = 1;
+        test2[1] = 2;
+        test = test2;
+        REQUIRE(test.ssize() == 2);
+        bool equal = test[0] == 1 && test[1] == 2;
+        CHECK(equal);
     }
-
-    /*SUBCASE("remove from empty array") {
-        ArrayD emptyArr(0);
-        REQUIRE_THROWS_AS(emptyArr.remove(0), std::invalid_argument);
-        REQUIRE(emptyArr.ssize() == 0);
-    }*/
-
-    SUBCASE("remove from single element array") {
-        ArrayD singleArr(1);
-        singleArr[0] = 1.0;
-        singleArr.remove(0);
-        REQUIRE(singleArr.ssize() == 0);
-    }
-
-    SUBCASE("remove from single element array with invalid index") {
-        ArrayD singleArr(1);
-        singleArr[0] = 1.0;
-        REQUIRE_THROWS_AS(singleArr.remove(1), std::invalid_argument);
-        REQUIRE(singleArr.ssize() == 1);
+    SUBCASE("Copy of yourself") {
+        ArrayD test(2);
+        CHECK_NOTHROW(test = test);
     }
 }
 
-
-TEST_CASE("ClearMethod") {
-    ArrayD arr(5);
-    arr.clear();
-    CHECK(arr.ssize() == 0);
-    CHECK(arr.capacity() == 0);
+TEST_CASE("[arrayD] - ArrayD insert") {
+    SUBCASE("Simple") {
+        ArrayD test(2);
+        test.insert(1, 1);
+        REQUIRE(test.ssize() == 3);
+        CHECK((test[0] == 0 && test[1] == 1 && test[2] == 0));
+    }
+    SUBCASE("Negative index") {
+        ArrayD test(2);
+        CHECK_THROWS(test.insert(-1, 1));
+    }
+    SUBCASE("Index is larger than size") {
+        ArrayD test(2);
+        CHECK_THROWS(test.insert(3, 1));
+    }
+    SUBCASE("Many inserts") {
+        ArrayD a(3);
+        a.insert(2, 2);
+        a.insert(0, 3);
+        a.insert(1, -4);
+        a.insert(6, 7);
+        a.remove(2);
+        CHECK(a.ssize() == 6);
+        CHECK(a == ArrayD{3, -4, 0, 2, 0, 7});
+        CHECK_THROWS(a[7]);
+        CHECK_THROWS(a[-1]);
+        CHECK_THROWS(a.insert(-1, 2));
+        CHECK_THROWS(a.insert(8, 2));
+        CHECK_THROWS(a.insert('b', 1));
+        CHECK_THROWS(a.insert('b', 'a'));
+    }
 }
 
-TEST_CASE("ResizeMethod") {
-    ArrayD arr(5);
-    arr.resize(10);
-    CHECK(arr.ssize() == 10);
-    CHECK(arr.capacity() == 10);
-    arr.resize(2);
-    CHECK(arr.ssize() == 2);
-    CHECK(arr.capacity() == 2);
+TEST_CASE("[arrayD] - ArrayD resize") {
+    CHECK(ArrayD().ssize() == 0);
+    SUBCASE("Simple") {
+        ArrayD test;
+        test.resize(2);
+        CHECK(test == ArrayD(2));
+    }
+    SUBCASE("With auto init") {
+        ArrayD a(3);
+        a[1] = 3;
+        a[2] = -5;
+        a.resize(5);
+        CHECK(a.ssize() == 5);
+        CHECK(a == ArrayD{0, 3, -5, 0, 0});
+        CHECK_THROWS(a[5]);
+        CHECK_THROWS(a.resize(0));
+    }
 }
 
-TEST_CASE("AssignmentOperator") {
-    ArrayD arr1(5);
-    arr1[0] = 1.0;
-    ArrayD arr2;
-    arr2 = arr1;
-    CHECK(arr1.ssize() == arr2.ssize());
-    CHECK(arr1.capacity() == arr2.capacity());
-    CHECK(arr1[0] == arr2[0]);
+TEST_CASE("[arrayd] - ArrayD push_back") {
+    SUBCASE("Simple") {
+        ArrayD a;
+        a.push_back(1);
+        a.push_back(2);
+        CHECK(a.ssize() == 2);
+        CHECK((a[0] == 1 && a[1] == 2));
+        CHECK_THROWS(a[2]);
+        CHECK_THROWS(a[-1]);
+    }
+    SUBCASE("not default") {
+        ArrayD a(3);
+        a.push_back(2);
+        a.push_back(3);
+        CHECK(a.ssize() == 5);
+        CHECK(a == ArrayD{0, 0, 0, 2, 3});
+        CHECK_THROWS(a[5]);
+        CHECK_THROWS(a[-1]);
+    }
+}
+
+TEST_CASE("[arrayd] - ArrayD remove") {
+    SUBCASE("Simple") {
+        ArrayD a;
+        CHECK_THROWS(a.remove(0));
+        CHECK_THROWS(a.remove(2));
+        CHECK_THROWS(a.remove(-1));
+    }
+    SUBCASE("Complex") {
+        ArrayD a(3);
+        a.insert(3, 2);
+        a.insert(0, 3);
+        a.insert(1, -4);
+        a.insert(6, 7);
+        a.remove(2);
+        CHECK(a.ssize() == 6);
+        CHECK(a == ArrayD{3, -4, 0, 2, 0, -7});
+        a.remove(0);
+        CHECK(a == ArrayD{-4, 0, 2, 0, -7});
+    }
 }

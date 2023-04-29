@@ -1,42 +1,57 @@
-#pragma once
 #ifndef ARRAYD_HPP
 #define ARRAYD_HPP
 
-#include <stdexcept>
-#include <algorithm>
+#include <cstddef>
+#include <exception>
+#include <initializer_list>
 
 class ArrayD {
 public:
-    ArrayD();
+    ArrayD() : size_(0), capacity_(0), data_(nullptr) {};
 
-    ArrayD(int size);
+    ArrayD(const ArrayD &rhs);
 
-    ArrayD(const ArrayD& other);
+    ArrayD(const ptrdiff_t &size);
+
+    ArrayD(const std::initializer_list<double> &in_list);
 
     ~ArrayD();
 
-    int ssize() const;
+    ArrayD &operator=(const ArrayD rhs);
 
-    int capacity() const;
+    const ptrdiff_t ssize() const noexcept;
 
-    double& operator[](int i);
+    void resize(const ptrdiff_t size);
 
-    const double& operator[](int i) const;
+    bool empty() noexcept;
 
-    ArrayD& operator=(const ArrayD& other);
+    void insert(ptrdiff_t index, double value);
 
-    void insert(double value, int index);
+    void remove(ptrdiff_t index);
 
-    void remove(int index);
+    void push_back(const double value);
 
-    void clear();
+    double pop_back();
 
-    void resize(int size);
+    void push_front(const double value);
+
+    double pop_front();
+
+    double &operator[](const ptrdiff_t index);
+
+    const double &operator[](const ptrdiff_t index) const;
+
+    bool operator==(const ArrayD &rhs) noexcept;
+
+    operator bool() const noexcept;
+
+    void fill(const int &begin, const int &end, const double &value);
 
 private:
-    double *m_data;
-    int m_size;
-    int m_capacity;
+    double *data_;
+    ptrdiff_t size_;
+    ptrdiff_t capacity_;
+    const double additional_memory_ = 0.5;
 };
 
 #endif

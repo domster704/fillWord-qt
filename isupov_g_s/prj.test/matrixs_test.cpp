@@ -1,137 +1,143 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include <doctest/doctest.h>
 #include "matrixs/matrixs.hpp"
-#include "doctest/doctest.h"
 
-TEST(MatrixSTest, DefaultConstructor
-) {
-MatrixS m1;
-ASSERT_EQ(m1
-.
-
-ssize(), std::make_tuple(0, 0)
-
-);
+TEST_CASE("Default constructor") {
+    MatrixS m;
+    CHECK(m.ssize() == std::make_tuple(0, 0));
 }
 
-// Test constructor with size parameter
-TEST(MatrixSTest, ConstructorWithSizeParameter
-) {
-MatrixS m2(3, 2);
-ASSERT_EQ(m2
-.
+TEST_CASE("Explicit constructor with tuple") {
+    MatrixS m(std::make_tuple(2, 3));
+    CHECK(m.ssize() == std::make_tuple(2, 3));
+    CHECK(m.nRows() == 2);
+    CHECK(m.nCols() == 3);
 
-ssize(), std::make_tuple(3, 2)
+    m.at(0, 0) = 1;
+    m.at(0, 1) = 2;
+    m.at(0, 2) = 3;
+    m.at(1, 0) = 4;
+    m.at(1, 1) = 5;
+    m.at(1, 2) = 6;
 
-);
-}
-
-// Test copy constructor
-TEST(MatrixSTest, CopyConstructor
-) {
-MatrixS m2(3, 2);
-m2.at(1, 1) = 5;
-MatrixS m3(m2);
-ASSERT_EQ(m3
-.at(1, 1), 5);
-}
-
-// Test assignment operator
-TEST(MatrixSTest, AssignmentOperator
-) {
-MatrixS m2(3, 2);
-m2.at(1, 1) = 5;
-MatrixS m4;
-m4 = m2;
-ASSERT_EQ(m4
-.at(1, 1), 5);
+    CHECK(m.at(0, 0) == 1);
+    CHECK(m.at(0, 1) == 2);
+    CHECK(m.at(0, 2) == 3);
+    CHECK(m.at(1, 0) == 4);
+    CHECK(m.at(1, 1) == 5);
+    CHECK(m.at(1, 2) == 6);
 }
 
-// Test resizing matrix
-TEST(MatrixSTest, ResizeMatrix
-) {
-MatrixS m2(3, 2);
-m2.resize(2, 4);
-ASSERT_EQ(m2
-.
+TEST_CASE("Copy constructor") {
+    MatrixS m1(std::make_tuple(3, 3));
+    m1.at(0, 0) = 1;
+    m1.at(0, 1) = 2;
+    m1.at(0, 2) = 3;
+    m1.at(1, 0) = 4;
+    m1.at(1, 1) = 5;
+    m1.at(1, 2) = 6;
+    m1.at(2, 0) = 7;
+    m1.at(2, 1) = 8;
+    m1.at(2, 2) = 9;
 
-ssize(), std::make_tuple(2, 4)
-
-);
-}
-
-// Test accessing elements using at() function
-TEST(MatrixSTest, AccessElementsWithAtFunction
-) {
-MatrixS m2(2, 2);
-m2.at(0, 0) = 1;
-m2.at(0, 1) = 2;
-m2.at(1, 0) = 3;
-m2.at(1, 1) = 4;
-ASSERT_EQ(m2
-.at(0, 0), 1);
-ASSERT_EQ(m2
-.at(0, 1), 2);
-ASSERT_EQ(m2
-.at(1, 0), 3);
-ASSERT_EQ(m2
-.at(1, 1), 4);
+    MatrixS m2(m1);
+    CHECK(m2.ssize() == std::make_tuple(3, 3));
+    CHECK(m2.nRows() == 3);
+    CHECK(m2.nCols() == 3);
+    CHECK(m2.at(0, 0) == 1);
+    CHECK(m2.at(0, 1) == 2);
+    CHECK(m2.at(0, 2) == 3);
+    CHECK(m2.at(1, 0) == 4);
+    CHECK(m2.at(1, 1) == 5);
+    CHECK(m2.at(1, 2) == 6);
+    CHECK(m2.at(2, 0) == 7);
+    CHECK(m2.at(2, 1) == 8);
+    CHECK(m2.at(2, 2) == 9);
 }
 
-// Test accessing elements using invalid indices
-TEST(MatrixSTest, AccessElementsWithInvalidIndices
-) {
-MatrixS m2(2, 2);
-bool exception_caught = false;
-try {
-m2.at(2, 0);
-}
-catch (
-const std::out_of_range& e
-) {
-exception_caught = true;
-}
-ASSERT_TRUE(exception_caught);
+TEST_CASE("Assignment operator") {
+    MatrixS m1(std::make_tuple(2, 2));
+    m1.at(0, 0) = 1;
+    m1.at(0, 1) = 2;
+    m1.at(1, 0) = 3;
+    m1.at(1, 1) = 4;
+
+    MatrixS m2(std::make_tuple(3, 3));
+    m2.at(0, 0) = 5;
+    m2.at(0, 1) = 6;
+    m2.at(0, 2) = 7;
+    m2.at(1, 0) = 8;
+    m2.at(1, 1) = 9;
+    m2.at(1, 2) = 10;
+    m2.at(2, 0) = 11;
+    m2.at(2, 1) = 12;
+    m2.at(2, 2) = 13;
+
+    m2 = m1;
+    CHECK(m2.ssize() == std::make_tuple(2, 2));
+    CHECK(m2.nRows() == 2);
+    CHECK(m2.nCols() == 2);
+    CHECK(m2.at(0, 0) == 1);
+    CHECK(m2.at(0, 1) == 2);
+    CHECK(m2.at(1, 0) == 3);
+    CHECK(m2.at(1, 1) == 4);
 }
 
-// Test accessing elements using const object
-TEST(MatrixSTest, AccessElementsWithConstObject
-) {
-const MatrixS m5(2, 2);
-ASSERT_EQ(m5
-.at(1, 1), 0);
+TEST_CASE("Indexing operator") {
+    MatrixS m(std::make_tuple(2, 2));
+    m.at(0, 0) = 1;
+    m.at(0, 1) = 2;
+    m.at(1, 0) = 3;
+    m.at(1, 1) = 4;
+
+    CHECK(m.at(0, 0) == 1);
+    CHECK(m.at(0, 1) == 2);
+    CHECK(m.at(1, 0) == 3);
+    CHECK(m.at(1, 1) == 4);
+
+    CHECK_THROWS_AS(m.at(-1, 0), std::out_of_range);
+    CHECK_THROWS_AS(m.at(0, -1), std::out_of_range);
+    CHECK_THROWS_AS(m.at(2, 0), std::out_of_range);
+    CHECK_THROWS_AS(m.at(0, 2), std::out_of_range);
 }
 
-// Test resizing matrix with negative size
-TEST(MatrixSTest, ResizeMatrixWithNegativeSize
-) {
-MatrixS m2(2, 2);
-bool exception_caught = false;
-try {
-m2.resize(-1, 2);
-}
-catch (
-const std::invalid_argument& e
-) {
-exception_caught = true;
-}
-ASSERT_TRUE(exception_caught);
+TEST_CASE("Resize method") {
+    MatrixS m(std::make_tuple(2, 2));
+    m.at(0, 0) = 1;
+    m.at(0, 1) = 2;
+    m.at(1, 0) = 3;
+    m.at(1, 1) = 4;
+
+    m.resize(std::make_tuple(3, 3));
+    CHECK(m.ssize() == std::make_tuple(3, 3));
+    CHECK(m.nRows() == 3);
+    CHECK(m.nCols() == 3);
+    CHECK(m.at(0, 0) == 1);
+    CHECK(m.at(0, 1) == 2);
+    CHECK(m.at(0, 2) == 0);
+    CHECK(m.at(1, 0) == 3);
+    CHECK(m.at(1, 1) == 4);
+    CHECK(m.at(1, 2) == 0);
+    CHECK(m.at(2, 0) == 0);
+    CHECK(m.at(2, 1) == 0);
+    CHECK(m.at(2, 2) == 0);
+
+    m.resize(std::make_tuple(2, 4));
+    CHECK(m.ssize() == std::make_tuple(2, 4));
+    CHECK(m.nRows() == 2);
+    CHECK(m.nCols() == 4);
+    CHECK(m.at(0, 0) == 1);
+    CHECK(m.at(0, 1) == 2);
+    CHECK(m.at(0, 2) == 0);
+    CHECK(m.at(0, 3) == 0);
+    CHECK(m.at(1, 0) == 3);
+    CHECK(m.at(1, 1) == 4);
+    CHECK(m.at(1, 2) == 0);
+    CHECK(m.at(1, 3) == 0);
+
+    CHECK_THROWS_AS(m.resize(0, 2), std::invalid_argument);
+    CHECK_THROWS_AS(m.resize(2, 0), std::invalid_argument);
 }
 
-// Test accessing elements using invalid indices after resizing
-TEST(MatrixSTest, AccessElementsWithInvalidIndicesAfterResizing
-) {
-MatrixS m2(2, 2);
-m2.resize(2, 4);
-bool exception_caught = false;
-try {
-m2.at(2, 0);
-}
-catch (
-const std::out_of_range& e
-) {
-exception_caught = true;
-}
-ASSERT_TRUE(exception_caught);
-}
 
