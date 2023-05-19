@@ -1,0 +1,107 @@
+#include <iostream>
+
+namespace geo2d::orto {
+    class Quad {
+    public:
+        Quad() = default;
+
+        ~Quad() = default;
+
+        Quad(Quad& square) = default;
+
+        Quad& operator=(const Quad& square) = default;
+
+        Quad(double x, double y, double width, double height) : x(x), y(y), width(width), height(height) {
+        }
+
+        virtual double GetW() {
+            return this->width;
+        }
+
+        virtual void SetW(double w) {
+            this->width = w;
+        }
+
+        virtual double GetH() {
+            return this->height;
+        }
+
+        virtual void SetH(double h) {
+            this->height = h;
+        }
+
+    public:
+        double x = 0;
+        double y = 0;
+
+    protected:
+        double width = 0;
+        double height = 0;
+    };
+
+    class Rect : public Quad {
+    public:
+        Rect() = default;
+
+        ~Rect() = default;
+
+        Rect(Rect& square) = default;
+
+        Rect& operator=(const Rect& square) = default;
+
+        Rect(double x, double y, double width, double height) : Quad(x, y, width, height) {}
+
+    };
+
+    class Square : public Quad {
+    public:
+        Square() = default;
+
+        ~Square() = default;
+
+        Square(Square& square) = default;
+
+        Square(double x, double y, double width) : Quad(x, y, width, width) {}
+
+        Square& operator=(const Square& square) = default;
+
+        void SetH(double w) override {
+            this->SetW(w);
+        }
+
+        double GetH() override {
+            return GetW();
+        }
+    };
+}
+
+int main() {
+    geo2d::orto::Quad quad = geo2d::orto::Quad(5, 5, 10, 16);
+    geo2d::orto::Quad quad2 = geo2d::orto::Quad(55, 55, 105, 165);
+    geo2d::orto::Quad quadTest1 = quad;
+
+    quad.SetW(22);
+    quad.SetH(33);
+    std::cout << quad.GetW() << " " << quad.GetH() << "\n";
+    std::cout << quadTest1.GetW() << " " << quadTest1.GetH() << "\n";
+    std::cout << "\n";
+    
+    geo2d::orto::Square square = geo2d::orto::Square(2, 2, 5);
+    geo2d::orto::Square square2 = geo2d::orto::Square(22, 22, 52);
+    geo2d::orto::Quad squareTest1 = square;
+
+    square.SetH(55);
+    square.SetW(99);
+    std::cout << square.GetW() << " " << square.GetH() << "\n";
+    std::cout << squareTest1.GetW() << " " << squareTest1.GetH() << "\n";
+    std::cout << "\n";
+
+    geo2d::orto::Rect rect = geo2d::orto::Rect(1, 1, 5, 4);
+    geo2d::orto::Rect rect2 = geo2d::orto::Rect(11, 11, 51, 41);
+    geo2d::orto::Quad rectTest1 = rect;
+
+    rect.SetW(8);
+    std::cout << rect.GetW() << " " << rect.GetH() << "\n";
+    std::cout << rectTest1.GetW() << " " << rectTest1.GetH() << "\n";
+    std::cout << "\n";
+}
