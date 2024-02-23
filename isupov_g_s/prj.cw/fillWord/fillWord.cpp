@@ -6,32 +6,31 @@
 #include <QFile>
 #include <QVBoxLayout>
 #include <QDebug>
-#include <utility>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QMenu>
 
-FillWordApp::FillWordApp(QWidget* parent)
-    : QMainWindow(parent) {
+FillWordApp::FillWordApp(QWidget *parent)
+        : QMainWindow(parent) {
     Q_INIT_RESOURCE(resources);
     setlocale(LC_ALL, "Russian");
     ReloadMatrix();
 
     // Screenshot actions
-    auto* makeScreenshotAction = new QAction("Save screenshot", this);
-    auto* settings = menuBar()->addMenu("Settings");
+    auto *makeScreenshotAction = new QAction("Save screenshot", this);
+    auto *settings = menuBar()->addMenu("Settings");
     settings->addAction(makeScreenshotAction);
     connect(makeScreenshotAction, &QAction::triggered, this, &FillWordApp::MakeScreenshot);
 
     // difficulty actions
-    auto* veryEasyAction = new QAction("Very easy", this);
-    auto* veryEasy = new QAction("Easy", this);
-    auto* normalAction = new QAction("Normal", this);
-    auto* hardAction = new QAction("Hard", this);
-    auto* veryHardAction = new QAction("Very hard", this);
+    auto *veryEasyAction = new QAction("Very easy", this);
+    auto *veryEasy = new QAction("Easy", this);
+    auto *normalAction = new QAction("Normal", this);
+    auto *hardAction = new QAction("Hard", this);
+    auto *veryHardAction = new QAction("Very hard", this);
 
-    auto* difficulty = menuBar()->addMenu("Level of difficulty");
+    auto *difficulty = menuBar()->addMenu("Level of difficulty");
     difficulty->addAction(veryEasyAction);
     difficulty->addAction(veryEasy);
     difficulty->addAction(normalAction);
@@ -53,8 +52,8 @@ void FillWordApp::CreateButtonsAndWords() {
         }
     }
 
-    auto* wordsVLayout = new QVBoxLayout();
-    for (const auto& pair: pointsMatrixGeneration.pointMap) {
+    auto *wordsVLayout = new QVBoxLayout();
+    for (const auto &pair: pointsMatrixGeneration.pointMap) {
         int wordIndex = 0;
         std::string word = wordsGenerator.GetRandomWordByLength(pair.second.size());
         if (word[0] != '*') {
@@ -65,8 +64,8 @@ void FillWordApp::CreateButtonsAndWords() {
 
         QColor color = QColor(rand() % 255, rand() % 255, rand() % 255);
 
-        for (const auto& point: pair.second) {
-            auto* button = new CellButton(this,
+        for (const auto &point: pair.second) {
+            auto *button = new CellButton(this,
                                           static_cast<int>(0.6 * this->size().width() / pointsMatrixGeneration.rows),
                                           point.x,
                                           point.y, word, wordIndex++, color.name());
@@ -75,14 +74,14 @@ void FillWordApp::CreateButtonsAndWords() {
     }
 
     // Заполнение макета словами
-    for (auto& pair: wordLabelMap) {
+    for (auto &pair: wordLabelMap) {
         wordsVLayout->addWidget(pair.second);
     }
 
     // Заполнение макета кнопками
-    auto* buttonsVLayout = new QVBoxLayout();
+    auto *buttonsVLayout = new QVBoxLayout();
     for (int i = 0; i < pointsMatrixGeneration.rows; i++) {
-        auto* hLayout = new QHBoxLayout();
+        auto *hLayout = new QHBoxLayout();
         for (int j = 0; j < pointsMatrixGeneration.cols; ++j) {
             hLayout->addWidget(cellsMatrix[i][j]);
         }
@@ -92,18 +91,18 @@ void FillWordApp::CreateButtonsAndWords() {
     mainLayout->addLayout(buttonsVLayout);
 }
 
-void FillWordApp::mouseMoveEvent(QMouseEvent* event) {
-    SwipeHandler* swipeHandler = SwipeHandler::getInstance();
+void FillWordApp::mouseMoveEvent(QMouseEvent *event) {
+    SwipeHandler *swipeHandler = SwipeHandler::getInstance();
     swipeHandler->mouseMove(event);
 }
 
-void FillWordApp::mousePressEvent(QMouseEvent* event) {
-    SwipeHandler* swipeHandler = SwipeHandler::getInstance();
+void FillWordApp::mousePressEvent(QMouseEvent *event) {
+    SwipeHandler *swipeHandler = SwipeHandler::getInstance();
     swipeHandler->mousePress(event);
 }
 
-void FillWordApp::mouseReleaseEvent(QMouseEvent* event) {
-    SwipeHandler* swipeHandler = SwipeHandler::getInstance();
+void FillWordApp::mouseReleaseEvent(QMouseEvent *event) {
+    SwipeHandler *swipeHandler = SwipeHandler::getInstance();
     swipeHandler->mouseRelease(event);
 }
 
@@ -111,8 +110,8 @@ FillWordApp::~FillWordApp() {
     ClearAllVariables();
 }
 
-void FillWordApp::WordIsCorrect(const std::vector<std::array<int, 2>>& cells) {
-    for (auto& pos: cells) {
+void FillWordApp::WordIsCorrect(const std::vector<std::array<int, 2>> &cells) {
+    for (auto &pos: cells) {
         cellsMatrix[pos[0]][pos[1]]->SetGuessed();
     }
 
@@ -120,9 +119,10 @@ void FillWordApp::WordIsCorrect(const std::vector<std::array<int, 2>>& cells) {
 }
 
 bool FillWordApp::MakeScreenshot() {
-    const QString fileName = QFileDialog::getSaveFileName(this, "Сохранить файл", "", "Image Files (*.png *.jpg *.bmp)");
+    const QString fileName = QFileDialog::getSaveFileName(this, "Сохранить файл", "",
+                                                          "Image Files (*.png *.jpg *.bmp)");
     const QPixmap p = QPixmap::grabWidget(this);
-    return  p.save(fileName);
+    return p.save(fileName);
 }
 
 void FillWordApp::ChangeDifficulty() {
@@ -152,7 +152,7 @@ void FillWordApp::ReloadMatrix() {
     wordsGenerator = WordsGenerator(words.readAll().toStdString());
 
     this->setWindowTitle("FillWord");
-    auto* widget = new QWidget();
+    auto *widget = new QWidget();
     mainLayout = new QHBoxLayout(widget);
 
     setMinimumSize(width_, height_);
@@ -165,19 +165,19 @@ void FillWordApp::ReloadMatrix() {
     const QString sty(style.readAll());
     this->setStyleSheet(sty);
 
-    SwipeHandler::getInstance(this, [this](const std::vector<std::array<int, 2>>& cells) {
+    SwipeHandler::getInstance(this, [this](const std::vector<std::array<int, 2>> &cells) {
         this->WordIsCorrect(cells);
     }, {pointsMatrixGeneration.rows, pointsMatrixGeneration.cols});
 }
 
 void FillWordApp::ClearAllVariables() {
-    for (auto& i: cellsMatrix) {
-        for (auto& j: i) {
+    for (auto &i: cellsMatrix) {
+        for (auto &j: i) {
             delete j;
         }
     }
     cellsMatrix.clear();
-    for (auto& pair: wordLabelMap) {
+    for (auto &pair: wordLabelMap) {
         delete pair.second;
     }
     wordLabelMap.clear();
