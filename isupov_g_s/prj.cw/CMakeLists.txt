@@ -1,0 +1,2 @@
+add_subdirectory(fillWord)
+add_subdirectory(pointsMatrixGeneration)

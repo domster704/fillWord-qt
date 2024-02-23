@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>style/app.qss</file>
+        <file>res/words.txt</file>
+        <file>res/alphabet.txt</file>
+    </qresource>
+</RCC>
