@@ -55,6 +55,22 @@
 
 ![image](https://github.com/domster704/fillWord-qt/assets/61056244/8a0d1976-5d02-483d-a348-026214f4a443)
 
-
 ![image](https://github.com/domster704/fillWord-qt/assets/61056244/630d9ce1-2fcc-4a2c-a19a-ba581c1077c4)
 
+
+# Техническое описание - установка и скачивание
+Для тестирования и использования библиотеки необходимо наличие библиотеки
+qt5-base, doctest, установленных с помощью vcpkg, и системы генерации документов
+Doxygen.
+1. Скачать код библиотеки по ссылке выше.
+2. Перейти в корневую папку isupov_g_s.
+3. Создать новую директорию «build» в данной директории
+> **mkdir build**
+4. Ввести в консоли следующее
+> **cmake -B build -DCMAKE_TOOLCHAIN_FILE=[путь до vcpkg.cmake]/vcpkg.cmake**
+5. С помощью команды «cmake –build» собрать проект
+> **cmake --build build --config Release**
+6. Перейти в папку build
+> **cd build**
+7. Установить библиотеку в папку
+> **cmake --install . --config Release**
